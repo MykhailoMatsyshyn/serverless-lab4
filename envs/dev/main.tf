@@ -33,10 +33,13 @@ module "producer" {
 
   environment_variables = {
     QUEUE_URL = module.queue.queue_url
+    TABLE_NAME = module.database.table_name
   }
 
-  enable_sqs    = true
-  sqs_queue_arn = module.queue.queue_arn
+  enable_sqs         = true
+  sqs_queue_arn      = module.queue.queue_arn
+  enable_dynamodb    = true
+  dynamodb_table_arn = module.database.table_arn
 }
 
 # Lambda consumer — читає з SQS і зберігає в DynamoDB + S3
