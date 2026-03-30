@@ -6,13 +6,13 @@ locals {
   prefix = "matsyshyn-mykhailo-11"
 }
 
-# S3 bucket для архівів feedback (окремий від bucket стану Terraform)
+# S3 bucket для архівів feedback
 resource "aws_s3_bucket" "feedback_archive" {
   bucket        = "${local.prefix}-feedback"
   force_destroy = true
 }
 
-# Модуль DynamoDB — таблиця для збереження feedback
+# Модуль DynamoDB
 module "database" {
   source     = "../../modules/dynamodb"
   table_name = "${local.prefix}-feedback-table"
@@ -35,6 +35,7 @@ module "producer" {
     QUEUE_URL = module.queue.queue_url
   }
 
+  enable_sqs    = true
   sqs_queue_arn = module.queue.queue_arn
 }
 
@@ -50,19 +51,24 @@ module "consumer" {
     BUCKET_NAME = aws_s3_bucket.feedback_archive.bucket
   }
 
+  enable_dynamodb    = true
   dynamodb_table_arn = module.database.table_arn
-  s3_bucket_arn      = aws_s3_bucket.feedback_archive.arn
-  sqs_queue_arn      = module.queue.queue_arn
+
+  enable_s3     = true
+  s3_bucket_arn = aws_s3_bucket.feedback_archive.arn
+
+  enable_sqs    = true
+  sqs_queue_arn = module.queue.queue_arn
 }
 
-# Підключає consumer до SQS — Lambda автоматично тригериться чергою
+# Тригер — consumer автоматично запускається коли є повідомлення в черзі
 resource "aws_lambda_event_source_mapping" "sqs_trigger" {
   event_source_arn = module.queue.queue_arn
   function_name    = module.consumer.function_arn
   batch_size       = 1
 }
 
-# Модуль API Gateway — публічний URL для producer
+# Модуль API Gateway
 module "api" {
   source               = "../../modules/api_gateway"
   api_name             = "${local.prefix}-http-api"

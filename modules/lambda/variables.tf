@@ -21,19 +21,34 @@ variable "environment_variables" {
 }
 
 variable "dynamodb_table_arn" {
-  description = "ARN of the DynamoDB table (optional)"
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 
 variable "sqs_queue_arn" {
-  description = "ARN of the SQS queue (optional)"
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
 }
 
 variable "s3_bucket_arn" {
-  description = "ARN of the S3 bucket (optional)"
-  type        = string
-  default     = ""
+  type    = string
+  default = ""
+}
+
+variable "enable_dynamodb" {
+  description = "Enable DynamoDB access policy"
+  type        = bool
+  default     = false
+}
+
+variable "enable_sqs" {
+  description = "Enable SQS access policy"
+  type        = bool
+  default     = false
+}
+
+variable "enable_s3" {
+  description = "Enable S3 access policy"
+  type        = bool
+  default     = false
 }
