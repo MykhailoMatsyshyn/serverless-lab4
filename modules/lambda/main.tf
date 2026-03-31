@@ -73,6 +73,22 @@ resource "aws_iam_role_policy" "s3_access" {
   })
 }
 
+# Політика доступу до Comprehend (якщо enable_comprehend = true)
+resource "aws_iam_role_policy" "comprehend_access" {
+  count = var.enable_comprehend ? 1 : 0
+  name  = "${var.function_name}-comprehend-policy"
+  role  = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["comprehend:DetectSentiment"]
+      Resource = "*"
+    }]
+  })
+}
+
 # Сама Lambda функція
 resource "aws_lambda_function" "this" {
   filename      = data.archive_file.lambda_zip.output_path

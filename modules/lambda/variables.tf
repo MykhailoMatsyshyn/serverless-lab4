@@ -52,3 +52,9 @@ variable "enable_s3" {
   type        = bool
   default     = false
 }
+
+variable "enable_comprehend" {
+  description = "Enable Amazon Comprehend access policy"
+  type        = bool
+  default     = false
+}
