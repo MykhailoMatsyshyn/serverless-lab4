@@ -62,6 +62,8 @@ module "consumer" {
 
   enable_sqs    = true
   sqs_queue_arn = module.queue.queue_arn
+
+  enable_comprehend  = true
 }
 
 # Тригер — consumer автоматично запускається коли є повідомлення в черзі
